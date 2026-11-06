@@ -1,0 +1,32 @@
+# Python 3.10; tested with torch 2.4.0 / torchvision 0.19.0, CUDA 12.1.
+# Install PyTorch separately for your CUDA version before scripts/install_model.sh.
+numpy==1.26.4
+albumentations==2.0.5
+opencv-python==4.11.0.86
+xtcocotools==1.14.3
+chumpy==0.70
+scipy
+munkres
+json_tricks
+Pillow
+einops
+importlib-metadata
+mat4py
+matplotlib
+modelindex
+rich
+addict
+pyyaml
+termcolor
+yapf==0.40.1
+packaging
+requests
+regex
+ftfy
+omegaconf
+prettytable
+terminaltables
+tqdm
+fsspec
+pandas
+shapely
