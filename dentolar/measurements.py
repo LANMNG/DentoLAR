@@ -91,7 +91,7 @@ def categorise_bone_level_ratio(r):          # low <15% (negative ratios count a
     return 'High', 0.0
 
 
-def categorise_root_to_crown(r):             # low >=2.0, moderate >1.0 and <2.0, high <=1.0 (Table 8)
+def categorise_root_to_crown(r):             # low >=2.0, moderate >1.0 and <2.0, high <=1.0 (Table 9)
     if r >= 2.0: return 'Low', r - 2.0
     if r > 1.0: return 'Moderate', r - 1.0
     return 'High', 0.0

@@ -1,12 +1,16 @@
-"""Export raw-image coordinates and legacy-compatible teeth measurements."""
+"""Export raw-image coordinates and the 13 teeth measurements (computed with dentolar/measurements.py)."""
 import argparse
 import csv
 import json
 import pickle
 from pathlib import Path
 
+import sys
+
 import numpy as np
-from shapely.geometry import LineString
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[5]))   # repository root
+from dentolar.measurements import measure, MEASUREMENTS  # noqa: E402
 
 NAMES = ['CEJA', 'CEJP', 'AP', 'A_crest', 'P_crest', 'CP', 'AB_AP', 'PB_AP',
          'AB_1/3', 'AR_1/3', 'PR_1/3', 'PB_1/3', 'AB_1/2', 'AR_1/2',
@@ -17,37 +21,14 @@ SPACING = 1 / 5.5556  # identical to the existing project evaluation script
 
 
 def measurements(p):
-    """Same 13 values/order as Measurement_GT/Measurement_pre in evaluation/.
-
-    Degenerate/non-intersecting segments yield NaN for undefined quantities,
-    and are explicitly reported, rather than crashing or fabricating values.
-    """
-    values = [float(np.linalg.norm(p[a] - p[b]) * SPACING)
-              for a, b in [(6, 2), (8, 9), (12, 13), (7, 2), (11, 10), (15, 14)]]
-    issues = []
-    cej = p[1] - p[0]
-    norm = np.linalg.norm(cej)
-    if norm <= 1e-10:
-        da = dp = float('nan')
-        issues.append('coincident_CEJ_points')
-    else:
-        da = float(abs(np.cross(cej, p[3] - p[0])) / norm * SPACING)
-        dp = float(abs(np.cross(cej, p[4] - p[0])) / norm * SPACING)
-    intersection = LineString([p[2], p[5]]).intersection(LineString([p[0], p[1]]))
-    if intersection.is_empty or intersection.geom_type != 'Point':
-        ap = cp = float('nan')
-        issues.append('AP_CP_and_CEJ_segments_do_not_intersect_at_one_point')
-    else:
-        m = np.array([intersection.x, intersection.y])
-        ap = float(np.linalg.norm(p[2] - m) * SPACING)
-        cp = float(np.linalg.norm(p[5] - m) * SPACING)
-    def ratio(a, b):
-        if not np.isfinite(b) or b <= 1e-10:
-            issues.append('undefined_ratio_denominator')
-            return float('nan')
-        return float(a / b)
-    values += [da, dp, ratio(da, ap), ratio(dp, ap), ap, cp, ratio(ap, cp)]
-    return values, sorted(set(issues))
+    """The 13 measurements, computed with the DentoLAR measurement module (dentolar/measurements.py), so that
+    they follow the definitions of the paper (bone level: signed projection of the CEJ-to-crest vector onto the
+    tooth axis CP-AP). Undefined geometry yields NaN values and is reported, rather than crashing."""
+    try:
+        m = measure(np.asarray(p, float), SPACING)
+    except ValueError as e:
+        return [float('nan')] * len(MEASUREMENTS), [str(e)]
+    return [float(m[k]) for k in MEASUREMENTS], []
 
 
 def export(annotations, predictions, output, fold, split, template):
@@ -76,7 +57,7 @@ def export(annotations, predictions, output, fold, split, template):
             raise ValueError(f'Multiple annotations per image: {name}')
         points = np.asarray(ann['keypoints'], dtype=float).reshape(16, 3)
         if not np.isfinite(points).all() or not np.all(points[:, 2] > 0):
-            raise ValueError('Legacy metrics require all 16 landmarks to be visible')
+            raise ValueError('Metrics require all 16 landmarks to be visible')
         gt[name] = points[:, :2]
     if set(gt) != set(pred) or len(gt) != len(images):
         raise ValueError(f'Prediction/annotation coverage mismatch: {len(gt)}, {len(pred)}')

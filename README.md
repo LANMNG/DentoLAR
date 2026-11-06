@@ -21,7 +21,7 @@ python run.py --dicom slice.dcm --id CASE_43      # requires the separate model 
 - Bone level is the distance from the CEJ to the alveolar crest, measured along the tooth axis. It is negative when the
   crest lies coronal to the CEJ, and the report flags that for a second look.
 - Bone-level ratio is bone level divided by root length (AP-M). Root-to-crown ratio is AP-M divided by CP-M.
-- The low / moderate / high categories use the thresholds in Table 8 of the paper. They are exploratory and are not a
+- The low / moderate / high categories use the thresholds in Table 9 of the paper. They are exploratory and are not a
   clinical staging.
 
 ## What is in the repository
@@ -98,4 +98,10 @@ also requires setting `model.backbone.module.init_cfg.checkpoint` to the actual
 base checkpoint. The model adapter overrides this automatically for inference.
 The full model source, custom crop, zero-loss guard, training/evaluation tools and
 original licenses are under `vendor/sapiens/`. Unrelated detection/segmentation
-projects, remote queue controllers and experiment outputs are not included.
+projects and experiment outputs are not included. All measurements, including those in
+`vendor/sapiens/pose/tools/teeth_cv/export_results.py`, are computed by `dentolar/measurements.py`.
+
+## License
+
+The DentoLAR code is released under the Apache License 2.0 (`LICENSE`). The vendored Sapiens code under
+`vendor/sapiens/` keeps its original CC BY-NC 4.0 license; see `THIRD_PARTY_NOTICES.md`.

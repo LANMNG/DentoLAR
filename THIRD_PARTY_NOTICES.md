@@ -11,7 +11,7 @@ https://github.com/facebookresearch/sapiens. The source manifest records copied
 file hashes and local portability edits. Inclusion here does not relicense
 third-party code or weights.
 
-The DentoLAR authors' own license has not yet been specified in the root LICENSE.
-Authors must resolve that placeholder before announcing an open-source release.
-No weight distribution URL or paper DOI is invented here. The authors should add
-those when available and permitted by their applicable terms.
+The root `LICENSE` (Apache License 2.0) applies to the DentoLAR code outside
+`vendor/` (`dentolar/`, `model.py`, `run.py`, `configs/`, `scripts/` and `tests/`).
+Code under `vendor/sapiens/` remains under its own license (CC BY-NC 4.0), so the
+landmark localisation model may be used for non-commercial purposes only.

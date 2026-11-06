@@ -4,11 +4,10 @@ Two cases:
 - Uncompressed DICOM (for example the files converted with ImageJ Bio-Formats, as in the study): works with numpy alone.
 - Original CS 3D Imaging export (JPEG lossless): works once  pip install pydicom pylibjpeg pylibjpeg-libjpeg  is in place.
   If that does not work on your machine, convert the files with Bio-Formats first and use the converted ones.
-  I could not try the original compressed files, so please test one (see TODO_TECHNICIAN.md).
 
 The pixel spacing sits in a nested sequence in the DICOM, not at the top level, so this code searches for it.
 
-The 8-bit rule is the one used to make the training PNGs (Marawan's organize_to_sapien scripts):
+The 8-bit rule is the one used to make the training PNGs:
 (pixel - min) / (max - min) * 255 per slice, then cast to uint8 (i.e. rounded down). No resizing at this step.
 """
 import re, struct, zlib
